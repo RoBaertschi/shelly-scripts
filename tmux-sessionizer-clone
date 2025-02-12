@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+REPO=$(gh repo list --json name --limit 1000 | jq '.[].name' -r | fzf --tmux center)
+if test -z $REPO; then
+    echo "Repo is empty, aborting..."
+    exit 1
+fi
+LANGUAGE=$(find ~/dev -maxdepth 1 -mindepth 1 -type d | fzf --tmux center)
+if test -z $LANGUAGE; then
+    printf "Directory is empty, do you want to create a new directory? [y/N]: " 
+    read NEW_LANGUAGE
+
+    if test $NEW_LANGUAGE = "y"; then
+        printf "Directory name: $HOME/dev/"
+        read LANGUAGE
+        if ! test -z $LANGUAGE; then
+            LANGUAGE="$HOME/dev/$LANGUAGE"
+            mkdir $LANGUAGE
+        else
+            echo "ERROR: Language is empty"
+            echo "Could not determine language, aborting..."
+            exit 1
+        fi
+    else
+        echo "Could not determine language, aborting..."
+        exit 1
+    fi
+
+fi
+DIR="$LANGUAGE/$REPO"
+
+gh repo clone $REPO $DIR
+
+tmux-sessionizer $REPO $DIR
