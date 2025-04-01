@@ -11,7 +11,7 @@
     self,
     nixpkgs,
   }: let
-    supportedSystems = ["x86_64-linux"];
+    supportedSystems = ["x86_64-linux" "aarch64-darwin"];
     lastModifiedDate = self.lastModifiedDate or self.lastModified or "19700101";
     version = builtins.substring 0 8 lastModifiedDate;
     forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
