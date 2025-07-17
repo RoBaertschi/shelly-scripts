@@ -71,12 +71,20 @@ else
 end
 startfile = File.join(repo, ".shelly-start")
 
+def write_gitignore(repo)
+  File.open(File.join(repo, ".gitignore"), File::CREAT | File::RDWR) do |f|
+    f.seek(0, :END)
+    f.puts("\n.shelly-start\n")
+  end
+end
+
 def setup_gitignore(repo)
-  if !File.foreach(File.join(repo, ".gitignore")).grep(/\.shelly-start/).any?
-    File.open(File.join(repo, ".gitignore"), File::CREAT | File::RDWR) do |f|
-      f.seek(0, :END)
-      f.puts("\n.shelly-start\n")
+  begin
+    if !File.foreach(File.join(repo, ".gitignore")).grep(/\.shelly-start/).any?
+      write_gitignore repo
     end
+  rescue Errno::ENOENT => _
+    write_gitignore repo
   end
 end
 
