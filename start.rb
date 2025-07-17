@@ -8,14 +8,14 @@ def input(prompt="", newline=false)
   Readline.readline(prompt, true).squeeze(" ").strip
 end
 
-output = `git status --porcelain`
-
 def run(*args)
   stdin, stdout, stderr, wait_thread = Open3.popen3(*args)
 
+  output = stdout.readlines
+
   if !wait_thread.value.success?
     puts "Failed to execute #{args} with #{wait_thread.value}"
-    puts "out: #{stdout.readlines.join ">> "}"
+    puts "out: #{output.join ">> "}"
     puts "err: #{stderr.readlines.join ">> "}"
     exit 1
   end
@@ -23,14 +23,24 @@ def run(*args)
   stdin.close
   stdout.close
   stderr.close
+
+  return output
 end
+
+output = run "git", "status", "--porcelain"
+p output
 
 def commit_state(message, when_)
   work_done = input(message)
   commit_message = "#{when_}: #{work_done}"
 
-  run("git", "add", ".")
-  run("git", "commit", "-m", commit_message)
+  puts run("git", "diff").join
+  sure = input("Are you sure? [yN]: ")
+
+  exit(1) if !sure
+
+  run "git", "add", "."
+  run "git", "commit", "-m", commit_message
 end
 
 if !output.empty?
