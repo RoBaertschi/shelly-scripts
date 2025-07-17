@@ -28,21 +28,21 @@ def run(*args)
 end
 
 output = run "git", "status", "--porcelain"
-p output
 
 def commit_state(message, when_)
+  system "git", "diff"
+  system "git", "status"
+
   work_done = input(message)
   commit_message = "#{when_}: #{work_done}"
+  sure = input("Are you sure? [y/N]: ")
 
-  puts run("git", "diff").join
-  sure = input("Are you sure? [yN]: ")
-
-  exit(1) if !sure
+  exit(1) if sure.downcase != "y"
 
   run "git", "add", "."
   run "git", "commit", "-m", commit_message
 end
 
 if !output.empty?
-  commit_state("What have you done: ", "Start")
+  commit_state("What have you done: ", "start")
 end
