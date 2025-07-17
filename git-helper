@@ -45,13 +45,13 @@ def commit_state(message, when_)
   run "git", "commit", "-m", commit_message
   !system "git", "push"
   if !$?.success?
-    sure = input("Could not push, do you want to create a new branch and push that one? [yN]: ")
+    sure = input("Could not push, do you want to create a new branch and push that one? [y/N]: ")
     return true if sure.downcase != "y"
     now = Time.now()
 
     branch = "conflict/from-#{now.strftime "%Y-%m-%d_%H-%M"}"
-    run "git", "checkout", "-b", branch
-    run "git", "push", "origin", branch
+    system "git", "checkout", "-b", branch
+    system "git", "push", "-u", "origin", branch
   end
 
   return true
