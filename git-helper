@@ -50,8 +50,8 @@ def commit_state(message, when_)
     now = Time.now()
 
     branch = "conflict/from-#{now.strftime "%Y-%m-%d_%H-%M"}"
-    run "git", "checkout", "-b", branch
-    run "git", "push", "origin", branch
+    system "git", "checkout", "-b", branch
+    system "git", "push", "origin", branch
   end
 
   return true
