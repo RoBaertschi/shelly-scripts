@@ -30,8 +30,12 @@ end
 output = run "git", "status", "--porcelain"
 
 def commit_state(message, when_)
-  system "git", "diff"
-  system "git", "status"
+  diff = run "git", "diff", "--color"
+  puts "diff:"
+  puts ">> #{diff.join ">> "}"
+  status = run "git", "status"
+  puts "status:"
+  puts ">> #{status.join ">> "}"
 
   work_done = input(message)
   commit_message = "#{when_}: #{work_done}"
@@ -39,8 +43,7 @@ def commit_state(message, when_)
 
   exit(1) if sure.downcase != "y"
 
-  run "git", "add", "."
-  run "git", "commit", "-m", commit_message
+  run "git", "commit", "-a", "-m", commit_message
   run "git", "push"
 end
 
