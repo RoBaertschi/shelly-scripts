@@ -45,7 +45,7 @@ def commit_state(message, when_)
   run "git", "commit", "-m", commit_message
   !system "git", "push"
   if !$?.success?
-    sure = input("Could not push, do you want to create a new branch and push that one? [yN]: ")
+    sure = input("Could not push, do you want to create a new branch and push that one? [y/N]: ")
     return true if sure.downcase != "y"
     now = Time.now()
 
