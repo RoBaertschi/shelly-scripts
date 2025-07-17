@@ -72,10 +72,10 @@ end
 startfile = File.join(repo, ".shelly-start")
 
 def setup_gitignore(repo)
-  File.open(File.join(repo, ".gitignore"), File::CREAT | File::RDWR) do |f|
-    if !f.readlines.include? ".shelly-start\n"
+  if !File.foreach(File.join(repo, ".gitignore")).grep(/\.shelly-start/).any?
+    File.open(File.join(repo, ".gitignore"), File::CREAT | File::RDWR) do |f|
       f.seek(0, :END)
-      f.puts("\n.shell-start\n")
+      f.puts("\n.shelly-start\n")
     end
   end
 end
