@@ -44,7 +44,7 @@ def commit_state(message, when_)
   exit(1) if sure.downcase != "y"
 
   run "git", "commit", "-a", "-m", commit_message
-  run "git", "push"
+  system "git", "push"
 end
 
 if !output.empty?
