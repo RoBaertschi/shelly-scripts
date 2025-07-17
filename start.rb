@@ -41,6 +41,7 @@ def commit_state(message, when_)
 
   run "git", "add", "."
   run "git", "commit", "-m", commit_message
+  run "git", "push"
 end
 
 if !output.empty?
