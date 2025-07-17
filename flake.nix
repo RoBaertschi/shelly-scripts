@@ -27,6 +27,9 @@
           cp ${./tmux-sessionizer} $out/bin/tmux-sessionizer
           cp ${./tmux-sessionizer-clone} $out/bin/tmux-sessionizer-clone
           cp ${./rfv} $out/bin/rfv
+          cp ${./git-helper} $out/bin/git-helper
+          cp ${./git-start} $out/bin/git-start
+          cp ${./git-done} $out/bin/git-done
           '';
       };
     };
@@ -36,7 +39,7 @@
     nixosModules.shelly = {pkgs, ...}:
       {
           nixpkgs.overlays = [self.overlay];
-          environment.systemPackages = [ pkgs.shelly pkgs.fzf pkgs.tmux pkgs.ripgrep pkgs.bat pkgs.gh pkgs.jq ];
+          environment.systemPackages = [ pkgs.shelly pkgs.fzf pkgs.tmux pkgs.ripgrep pkgs.bat pkgs.gh pkgs.jq pkgs.ruby ];
       };
     defaultPackage = forAllSystems (system: self.packages.${system}.shelly);
   };
