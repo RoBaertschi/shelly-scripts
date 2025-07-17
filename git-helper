@@ -124,4 +124,6 @@ elsif ARGV[0] == "done"
     end
   rescue Errno::ENOENT => _
   end
+elsif ARGV[0] == "no-session"
+  check_state "What do you want to commit: ", "no session"
 end
