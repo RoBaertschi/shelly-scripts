@@ -27,8 +27,6 @@ def run(*args)
   return output
 end
 
-output = run "git", "status", "--porcelain"
-
 def commit_state(message, when_)
   diff = run "git", "diff", "--color"
   puts "diff:"
@@ -41,11 +39,21 @@ def commit_state(message, when_)
   commit_message = "#{when_}: #{work_done}"
   sure = input("Are you sure? [y/N]: ")
 
-  exit(1) if sure.downcase != "y"
+  return false if sure.downcase != "y"
 
   run "git", "add", "."
   run "git", "commit", "-m", commit_message
   system "git", "push"
+
+  return true
+end
+
+def check_state(message, when_)
+  output = run "git", "status", "--porcelain"
+  if !output.empty?
+    return commit_state message, when_
+  end
+  return false
 end
 
 if ARGV[0].nil?
@@ -53,6 +61,50 @@ if ARGV[0].nil?
   exit 1
 end
 
-if !output.empty?
-  commit_state("What have you done: ", ARGV[0])
+repo = run "git", "rev-parse", "--show-toplevel"
+
+if repo.empty?
+  puts("could not get repo")
+  exit 1
+else
+  repo = repo[0].rstrip
+end
+startfile = File.join(repo, ".shelly-start")
+
+def setup_gitignore(repo)
+  File.open(File.join(repo, ".gitignore"), File::CREAT | File::RDWR) do |f|
+    if !f.readlines.include? ".shelly-start"
+      f.seek(0, :END)
+      f.puts("\n.shell-start\n")
+    end
+  end
+end
+
+if ARGV[0] == "start"
+  check_state "What have you done: ", ARGV[0]
+
+  setup_gitignore repo
+
+  File.open(startfile, File::WRONLY | File::CREAT | File::TRUNC) do |f|
+    f.puts(Time.now)
+  end
+elsif ARGV[0] == "done"
+  date = Time.now
+  begin
+    date = File.open(startfile, File::RDONLY) do |f|
+      Time.new f.read.strip
+    end
+  rescue Errno::ENOENT => _
+  end
+
+  setup_gitignore repo
+  commited = check_state "What have you done: ", "done session from #{date}"
+  exit 0 if !commited
+
+  begin
+    File.open(startfile, File::RDONLY) do |f|
+      File.delete(f)
+    end
+  rescue Errno::ENOENT => _
+  end
 end
